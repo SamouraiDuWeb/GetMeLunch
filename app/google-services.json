@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "280173509409",
+    "project_id": "getmelunch-8ea05",
+    "storage_bucket": "getmelunch-8ea05.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:280173509409:android:50f8563f5e6e5d9eaadc60",
+        "android_client_info": {
+          "package_name": "com.example.getmelunch"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "280173509409-ctsg5eltf9pcf4u7ckvdi4jc0je6esst.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.getmelunch",
+            "certificate_hash": "78fa24fe74b4ddbd3b9037ecad82b926c536b547"
+          }
+        },
+        {
+          "client_id": "280173509409-eparujn4b02q8dkroid81ute6m63pgdj.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_R2RKSiWxrb6cE-nVlbJO-NRrFd51cx8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "280173509409-eparujn4b02q8dkroid81ute6m63pgdj.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
