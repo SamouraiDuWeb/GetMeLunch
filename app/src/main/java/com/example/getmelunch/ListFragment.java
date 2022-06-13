@@ -1,64 +1,87 @@
 package com.example.getmelunch;
 
+import android.content.Intent;
+import android.location.Location;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ListFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import com.example.getmelunch.Di.PlacesService;
+import com.example.getmelunch.Models.Restaurant;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class ListFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    RecyclerView recyclerViewRestaurants;
+    PlacesService placesService;
+    Location currentLocation;
+    int PROXIMITY_RADIUS = 1000;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ListFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ListFragment newInstance(String param1, String param2) {
-        ListFragment fragment = new ListFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
+    //get info from nearby search and bind into recycler view
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_list, container, false);
+
+        recyclerViewRestaurants = view.findViewById(R.id.rv_restaurants);
+
+//        initretrofit();
+
+        return view;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_list, container, false);
-    }
+//    private void initretrofit() {
+//        String url = "https://maps.googleapis.com/maps/";
+//
+//        Retrofit retrofit = new Retrofit.Builder()
+//                .baseUrl(url)
+//                .addConverterFactory(GsonConverterFactory.create())
+//                .build();
+//        String type = "restaurant";
+//        PlacesService service = retrofit.create(PlacesService.class);
+//        String strCurrentLocation = currentLocation.getLatitude() + "," + currentLocation.getLongitude();
+//        System.out.println("///strCurrentLocation : " + strCurrentLocation);
+//        Call<Restaurant> call = service.getNearbyPlaces(strCurrentLocation, PROXIMITY_RADIUS, type, getString(R.string.google_maps_key));
+//        call.enqueue(new Callback<Restaurant>() {
+//            @Override
+//            public void onResponse(Call<Restaurant> call, retrofit2.Response<Restaurant> response) {
+//                try {
+//                    for (int i = 0; i < response.body().getResults().size(); i++) {
+//                        Double lat = response.body().getResults().get(i).getGeometry().getLocation().getLatitude();
+//                        Double lng = response.body().getResults().get(i).getGeometry().getLocation().getLongitude();
+//                        String placeName = response.body().getResults().get(i).getName();
+//                        String vicinity = response.body().getResults().get(i).getVicinity();
+//                        MarkerOptions markerOptions = new MarkerOptions();
+//                        LatLng latLng = new LatLng(lat, lng);
+//                        // . . .
+//                        // Bind into recycler view
+////                        recyclerViewRestaurants.setAdapter(new RestaurantAdapter(getContext(), response.body().getResults()));
+//
+//                    }
+//                } catch (Exception e) {
+//                    Log.d("onResponse", "///There is an error" + e.getMessage());
+//                    e.printStackTrace();
+//                }
+//            }
+//            @Override
+//            public void onFailure(Call<Restaurant> call, Throwable t) {
+//
+//            }
+//        });
+//    }
 }

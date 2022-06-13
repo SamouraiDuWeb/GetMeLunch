@@ -6,7 +6,6 @@
     <string name="map">Map</string>
     <string name="list">List</string>
     <string name="workmates">Workmates</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="google_maps_key">AIzaSyB2faUZmaL00olncSvjlIx57o5GgmWNH-s</string>
 </resources>
