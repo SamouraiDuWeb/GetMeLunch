@@ -1,12 +1,13 @@
 package com.example.getmelunch.Di;
 
-import com.example.getmelunch.Models.Restaurant;
+import com.example.getmelunch.Models.Places.NearbySearchResponse;
+import com.example.getmelunch.Models.Places.Restaurant;
 
 import retrofit2.http.GET;
-import retrofit2.http.Query;
 import retrofit2.http.Url;
 
 public interface PlacesService {
-    @GET("nearbysearch/json")
-    retrofit2.Call<Restaurant> getNearbyPlaces(@Url String url);
+
+    @GET
+    retrofit2.Call<NearbySearchResponse> getNearbyPlaces(@Url String url);
 }

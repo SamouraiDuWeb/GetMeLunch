@@ -1,4 +1,4 @@
-package com.example.getmelunch.Models;
+package com.example.getmelunch.Models.Places;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,8 +9,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.xml.transform.Result;
 
 public class Restaurant implements Serializable, Parcelable {
 
@@ -26,10 +24,6 @@ public class Restaurant implements Serializable, Parcelable {
     private String phoneNumber;
     private String placeId;
 
-    @SerializedName("results")
-    @Expose
-    private List<Restaurant> results = new ArrayList<Restaurant>();
-
     @SerializedName("geometry")
     @Expose
     private Geometry geometry;
@@ -37,6 +31,9 @@ public class Restaurant implements Serializable, Parcelable {
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
+
+
+
 
     public String getId() {
         return id;
@@ -143,25 +140,6 @@ public class Restaurant implements Serializable, Parcelable {
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
     }
-
-    /**
-     *
-     * @return
-     * The results
-     */
-    public List<Restaurant> getResults() {
-        return results;
-    }
-
-    /**
-     *
-     * @param results
-     * The results
-     */
-    public void setResults(List<Restaurant> results) {
-        this.results = results;
-    }
-
     /**
      *
      * @return

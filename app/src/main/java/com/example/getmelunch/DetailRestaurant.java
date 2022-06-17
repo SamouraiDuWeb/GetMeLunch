@@ -4,7 +4,7 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.getmelunch.Models.Restaurant;
+import com.example.getmelunch.Models.Places.Restaurant;
 
 public class DetailRestaurant extends AppCompatActivity {
 

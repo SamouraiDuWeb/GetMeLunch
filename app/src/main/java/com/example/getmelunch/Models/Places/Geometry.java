@@ -1,4 +1,4 @@
-package com.example.getmelunch.Models;
+package com.example.getmelunch.Models.Places;
 
 import android.location.Location;
 

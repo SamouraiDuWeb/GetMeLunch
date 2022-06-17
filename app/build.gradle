@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.facebook.android:facebook-android-sdk:8.0.0'
 
     //maps
-    implementation "com.google.android.gms:play-services-location:19.0.1"
+    implementation "com.google.android.gms:play-services-location:20.0.0"
 
     implementation 'com.google.android.material:material:<version>'
 
