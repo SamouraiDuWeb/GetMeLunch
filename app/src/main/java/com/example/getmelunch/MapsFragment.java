@@ -117,6 +117,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             currentLocation = location;
             if (currentLocation != null) {
                 moveCameraToLocation(currentLocation);
+                initRetrofitPlaces("restaurant");
             }
             System.out.println("/// Current Location: " + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
         }).addOnFailureListener(e -> {
@@ -144,7 +145,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 //        Objects.requireNonNull(currentMarker).setTag(703);
         mMap.animateCamera(cameraUpdate);
 
-//        initRetrofitPlaces("restaurant");
+
     }
 
     private void initRetrofitPlaces(String type) {
