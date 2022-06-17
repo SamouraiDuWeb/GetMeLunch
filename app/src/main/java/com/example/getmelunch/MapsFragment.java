@@ -106,16 +106,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 super.onLocationResult(locationResult);
             }
         };
-//        getCurrentLocation();
+        getCurrentLocation();
     }
 
     @SuppressLint("MissingPermission")
     private void getCurrentLocation() {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
         fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
-            if (location == null) {
-//                location =
-            }
+
             currentLocation = location;
             if (currentLocation != null) {
                 moveCameraToLocation(currentLocation);
@@ -137,15 +135,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .snippet("youu");
 
-        if (currentMarker != null) {
-            currentMarker.remove();
-        }
-        System.out.println("/// " + mMap);
-        currentMarker = mMap.addMarker(markerOptions);
-        Objects.requireNonNull(currentMarker).setTag(703);
+//        if (currentMarker != null) {
+//            currentMarker.remove();
+//        }
+        mMap.addMarker(markerOptions);
+
+//        currentMarker = mMap.addMarker(markerOptions);
+//        Objects.requireNonNull(currentMarker).setTag(703);
         mMap.animateCamera(cameraUpdate);
 
-        initRetrofitPlaces("restaurant");
+//        initRetrofitPlaces("restaurant");
     }
 
     private void initRetrofitPlaces(String type) {
