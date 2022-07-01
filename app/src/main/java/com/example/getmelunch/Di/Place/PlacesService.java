@@ -1,4 +1,4 @@
-package com.example.getmelunch.Di;
+package com.example.getmelunch.Di.Place;
 
 import com.example.getmelunch.Models.Places.NearbySearchResponse;
 import com.example.getmelunch.Models.Places.Restaurant;

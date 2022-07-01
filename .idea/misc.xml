@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/drawable/star_one.xml" value="0.1" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_detail_restaurant.xml" value="0.23489583333333333" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_facebook.xml" value="1.1928571428571428" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
@@ -10,6 +11,7 @@
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_maps.xml" value="0.18802083333333333" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/fragment_list.xml" value="0.19739583333333333" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/fragment_maps.xml" value="0.19739583333333333" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/restaurant_item.xml" value="0.25416666666666665" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.25052083333333336" />
       </map>
     </option>

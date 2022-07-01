@@ -10,7 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.getmelunch.Di.PlacesService;
+import com.example.getmelunch.Di.Place.PlacesService;
 
 public class ListFragment extends Fragment {
 

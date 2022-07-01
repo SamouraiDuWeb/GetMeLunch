@@ -1,20 +1,15 @@
 package com.example.getmelunch.Models.Places;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
-public class Restaurant implements Serializable, Parcelable {
+public class Restaurant implements Serializable {
 
     private String id;
     private String name;
-    private String urlImage;
     private String lat;
     private String lng;
     private String address;
@@ -32,7 +27,17 @@ public class Restaurant implements Serializable, Parcelable {
     @Expose
     private String vicinity;
 
+    @SerializedName("photos")
+    @Expose
+    private List<PlacePhotos> photos = null;
 
+    @SerializedName("opening_hours")
+    @Expose
+    private NearbyPlaceOpeningHours openingHours;
+
+    public List<PlacePhotos> getPhotos() {
+        return photos;
+    }
 
 
     public String getId() {
@@ -49,14 +54,6 @@ public class Restaurant implements Serializable, Parcelable {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getUrlImage() {
-        return urlImage;
-    }
-
-    public void setUrlImage(String urlImage) {
-        this.urlImage = urlImage;
     }
 
     public String getLat() {
@@ -124,84 +121,39 @@ public class Restaurant implements Serializable, Parcelable {
     }
 
     /**
-     *
-     * @return
-     * The vicinity
+     * @return The vicinity
      */
     public String getVicinity() {
         return vicinity;
     }
 
     /**
-     *
-     * @param vicinity
-     * The vicinity
+     * @param vicinity The vicinity
      */
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
     }
+
     /**
-     *
-     * @return
-     * The geometry
+     * @return The geometry
      */
     public Geometry getGeometry() {
         return geometry;
     }
 
     /**
-     *
-     * @param geometry
-     * The geometry
+     * @param geometry The geometry
      */
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
 
-    protected Restaurant(Parcel in) {
-        id = in.readString();
-        name = in.readString();
-        urlImage = in.readString();
-        lat = in.readString();
-        lng = in.readString();
-        address = in.readString();
-        count = in.readInt();
-        rating = in.readLong();
-        byte tmpOpenNow = in.readByte();
-        openNow = tmpOpenNow == 0 ? null : tmpOpenNow == 1;
-        phoneNumber = in.readString();
-        placeId = in.readString();
+
+    public NearbyPlaceOpeningHours getOpeningHours() {
+        return openingHours;
     }
 
-    public static final Creator<Restaurant> CREATOR = new Creator<Restaurant>() {
-        @Override
-        public Restaurant createFromParcel(Parcel in) {
-            return new Restaurant(in);
-        }
-
-        @Override
-        public Restaurant[] newArray(int size) {
-            return new Restaurant[size];
-        }
-    };
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(id);
-        parcel.writeString(name);
-        parcel.writeString(urlImage);
-        parcel.writeString(lat);
-        parcel.writeString(lng);
-        parcel.writeString(address);
-        parcel.writeInt(count);
-        parcel.writeLong(rating);
-        parcel.writeByte((byte) (openNow == null ? 0 : openNow ? 1 : 2));
-        parcel.writeString(phoneNumber);
-        parcel.writeString(placeId);
+    public void setOpeningHours(NearbyPlaceOpeningHours openingHours) {
+        this.openingHours = openingHours;
     }
 }
