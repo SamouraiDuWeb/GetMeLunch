@@ -7,17 +7,17 @@
 
     <fragment
         android:id="@+id/mapsFragment"
-        android:name="com.example.getmelunch.MapsFragment"
+        android:name="com.example.getmelunch.Ui.MapsFragment"
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" />
     <fragment
         android:id="@+id/listFragment"
-        android:name="com.example.getmelunch.ListFragment"
+        android:name="com.example.getmelunch.Ui.ListFragment"
         android:label="fragment_list"
         tools:layout="@layout/fragment_list" />
     <fragment
         android:id="@+id/workmatesFragment"
-        android:name="com.example.getmelunch.WorkmatesFragment"
+        android:name="com.example.getmelunch.Ui.WorkmatesFragment"
         android:label="fragment_workmates"
         tools:layout="@layout/fragment_workmates" />
 </navigation>

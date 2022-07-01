@@ -1,4 +1,4 @@
-package com.example.getmelunch;
+package com.example.getmelunch.Ui;
 
 import android.location.Location;
 import android.os.Bundle;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.getmelunch.Di.Place.PlacesService;
+import com.example.getmelunch.R;
 
 public class ListFragment extends Fragment {
 

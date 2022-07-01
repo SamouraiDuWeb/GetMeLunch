@@ -1,15 +1,14 @@
-package com.example.getmelunch;
+package com.example.getmelunch.Ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.getmelunch.R;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.FirebaseAuthUIActivityResultContract;
 import com.firebase.ui.auth.IdpResponse;

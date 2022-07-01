@@ -1,4 +1,4 @@
-package com.example.getmelunch;
+package com.example.getmelunch.Ui;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.getmelunch.Di.Place.PlacesService;
 import com.example.getmelunch.Di.Place.RetrofitBuilder;
 import com.example.getmelunch.Models.Places.NearbySearchResponse;
+import com.example.getmelunch.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
