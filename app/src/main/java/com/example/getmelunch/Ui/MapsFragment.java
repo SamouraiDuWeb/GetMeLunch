@@ -9,6 +9,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +21,9 @@ import com.example.getmelunch.Di.Place.PlacesService;
 import com.example.getmelunch.Di.Place.RetrofitBuilder;
 import com.example.getmelunch.Models.Places.NearbySearchResponse;
 import com.example.getmelunch.R;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -35,12 +38,22 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
+
+import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.http.Query;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
@@ -55,17 +68,28 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private LocationRequest locationRequest;
     private LocationCallback locationCallback;
     private FirebaseAuth firebaseAuth;
-    Context context;
+    private Context context;
     private Marker currentMarker;
+    private AutocompleteSessionToken token;
+    private PlacesClient placesClient;
+    private String query;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+
         if (mapFragment != null) {
             mapFragment.getMapAsync(this);
         }
+
         context = this.getContext();
+
+        Places.initialize(context.getApplicationContext(), String.valueOf(R.string.google_maps_key));
+        placesClient = Places.createClient(requireActivity());
+        token = AutocompleteSessionToken.newInstance();
+
         return view;
     }
 
@@ -73,6 +97,62 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         setUpMap();
+        getAutoComplete();
+    }
+
+    private void getAutoComplete() {
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                Log.i(TAG, "Place: " + place.getName());
+                latitude = place.getLatLng().latitude;
+                longitude = place.getLatLng().longitude;
+                url = getUrl(latitude, longitude, "restaurant");
+                mMap.clear();
+                currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(place.getName().toString()));
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+                getNearbyPlacesData(url);
+            }
+
+            @Override
+            public void onError(Status status) {
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
+    }
+
+    private void getNearbyPlacesData(String url) {
+        PlacesService service = RetrofitBuilder.getRetrofitApi();
+        Call<NearbySearchResponse> call = service.getNearbyPlaces(url);
+        call.enqueue(new Callback<NearbySearchResponse>() {
+            @Override
+            public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
+                if (response.isSuccessful()) {
+                    for (int i = 0; i < response.body().getResults().size(); i++) {
+                        mMap.addMarker(new MarkerOptions().position(new LatLng(response.body().getResults().get(i).getGeometry().getLocation().getLatitude(), response.body().getResults().get(i).getGeometry().getLocation().getLongitude())).title(response.body().getResults().get(i).getName()));
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NearbySearchResponse> call, Throwable t) {
+                Log.i(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    private String getUrl(double latitude, double longitude, String restaurant) {
+        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=" + latitude + "," + longitude);
+        googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
+        googlePlacesUrl.append("&type=" + restaurant);
+        googlePlacesUrl.append("&key=" + R.string.google_maps_key);
+        return googlePlacesUrl.toString();
     }
 
     @SuppressLint("MissingPermission")
@@ -82,43 +162,29 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         }
-        setUpLocation();
-    }
-
-    private void setUpLocation() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(10000);
         locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
+        System.out.println("///" + currentLocation);
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-                for (Location location : locationResult.getLocations()) {
-                    Log.d("TAG", "onLocationResult: " + location.getLatitude() + ","
-                            + location.getLongitude());
+                if (locationResult != null) {
+                    Double latitude = locationResult.getLocations().get(0).getLatitude();
+                    Double longitude = locationResult.getLocations().get(0).getLongitude();
+                    System.out.println("///" + latitude + "///" + longitude);
+                } else {
+                    System.out.println("///" + "null");
                 }
-                super.onLocationResult(locationResult);
             }
         };
-        getCurrentLocation();
+//        setUpLocation();
     }
 
     @SuppressLint("MissingPermission")
-    private void getCurrentLocation() {
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireContext());
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location -> {
+    private void setUpLocation() {
 
-            currentLocation = location;
-            if (currentLocation != null) {
-                moveCameraToLocation(currentLocation);
-                initRetrofitPlaces("restaurant");
-            }
-            System.out.println("/// Current Location: " + currentLocation.getLatitude() + "," + currentLocation.getLongitude());
-        }).addOnFailureListener(e -> {
-            System.out.println("/// Current Location: " + e.getMessage());
-        });
-
+        moveCameraToLocation(currentLocation);
     }
 
     private void moveCameraToLocation(Location currentLocation) {
@@ -131,13 +197,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .snippet("youu");
 
-//        if (currentMarker != null) {
-//            currentMarker.remove();
-//        }
         mMap.addMarker(markerOptions);
 
-//        currentMarker = mMap.addMarker(markerOptions);
-//        Objects.requireNonNull(currentMarker).setTag(703);
         mMap.animateCamera(cameraUpdate);
 
 

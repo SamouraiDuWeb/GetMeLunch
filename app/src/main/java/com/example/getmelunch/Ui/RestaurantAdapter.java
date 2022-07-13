@@ -60,7 +60,11 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
+
+            itemView.setOnClickListener(v -> listener.onItemClicked(restaurants.get(getAdapterPosition())));
         }
+
+
 
         public void bindView(Restaurant restaurant) {
 
