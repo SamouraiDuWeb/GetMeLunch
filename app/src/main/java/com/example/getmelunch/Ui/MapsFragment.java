@@ -71,9 +71,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private Context context;
     private Marker currentMarker;
     private AutocompleteSessionToken token;
-    private PlacesClient placesClient;
     private String query;
-
+    private PlacesService service;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -87,7 +86,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         context = this.getContext();
 
         Places.initialize(context.getApplicationContext(), String.valueOf(R.string.google_maps_key));
-        placesClient = Places.createClient(requireActivity());
+        service = RetrofitBuilder.getRetrofitApi();
         token = AutocompleteSessionToken.newInstance();
 
         return view;
@@ -115,7 +114,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(place.getName().toString()));
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-                getNearbyPlacesData(url);
+//                getNearbyPlacesData(url);
             }
 
             @Override
@@ -127,7 +126,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     }
 
     private void getNearbyPlacesData(String url) {
-        PlacesService service = RetrofitBuilder.getRetrofitApi();
         Call<NearbySearchResponse> call = service.getNearbyPlaces(url);
         call.enqueue(new Callback<NearbySearchResponse>() {
             @Override
@@ -151,7 +149,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         googlePlacesUrl.append("location=" + latitude + "," + longitude);
         googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
         googlePlacesUrl.append("&type=" + restaurant);
-        googlePlacesUrl.append("&key=" + R.string.google_maps_key);
+        googlePlacesUrl.append("&key=" + "AIzaSyCypnSaW_Yu3l4RanzHo3H7np2t7JOpSjI");
+        System.out.println("/// " + googlePlacesUrl.toString());
         return googlePlacesUrl.toString();
     }
 
@@ -162,29 +161,29 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         }
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
+
         System.out.println("///" + currentLocation);
-        locationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(@NonNull LocationResult locationResult) {
-                if (locationResult != null) {
-                    Double latitude = locationResult.getLocations().get(0).getLatitude();
-                    Double longitude = locationResult.getLocations().get(0).getLongitude();
-                    System.out.println("///" + latitude + "///" + longitude);
-                } else {
-                    System.out.println("///" + "null");
-                }
-            }
-        };
-//        setUpLocation();
+        setUpLocation();
     }
 
     @SuppressLint("MissingPermission")
     private void setUpLocation() {
-
-        moveCameraToLocation(currentLocation);
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    System.out.println("///: " + location.getLatitude() + " " + location.getLongitude());
+                    currentLocation = location;
+                    latitude = currentLocation.getLatitude();
+                    longitude = currentLocation.getLongitude();
+                    url = getUrl(latitude, longitude, "restaurant");
+                    mMap.clear();
+                    currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here"));
+                    moveCameraToLocation(currentLocation);
+                    getNearbyPlacesData(url);
+                }
+            }
+        });
     }
 
     private void moveCameraToLocation(Location currentLocation) {
@@ -200,51 +199,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap.addMarker(markerOptions);
 
         mMap.animateCamera(cameraUpdate);
-
-
-    }
-
-    private void initRetrofitPlaces(String type) {
-        //https://github.com/GabrielAranias/Go4Lunch_v2/blob/master/app/src/main/java/com/gabriel/aranias/go4lunch_v2/service/place/RetrofitApi.java
-
-        url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
-                + currentLocation.getLatitude() + "," + currentLocation.getLongitude()
-                + "&radius=" + PROXIMITY_RADIUS + "&type=" + type + "&key=" + context.getString(R.string.google_maps_key);
-        PlacesService retrofitApi = RetrofitBuilder.getRetrofitApi();
-        retrofitApi.getNearbyPlaces(url).enqueue(new Callback<NearbySearchResponse>() {
-
-            @Override
-            public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
-                Gson gson = new Gson();
-                String res = gson.toJson(response.body());
-                Log.d(TAG, "///onResponse: " + res);
-                if (response.errorBody() == null) {
-                    if (response.body() != null) {
-                        if (response.body().getResults() != null &&
-                                response.body().getResults().size() > 0) {
-                            mMap.clear();
-                            for (int i = 0; i < response.body().getResults().size(); i++) {
-                                String name = response.body().getResults().get(i).getName();
-                                String vicinity = response.body().getResults().get(i).getVicinity();
-                                double lat = response.body().getResults().get(i).getGeometry().getLocation().getLatitude();
-                                double lng = response.body().getResults().get(i).getGeometry().getLocation().getLongitude();
-                                LatLng latLng = new LatLng(lat, lng);
-                                mMap.addMarker(new MarkerOptions().position(latLng).title(name + " : " + vicinity));
-                            }
-                        } else {
-                            mMap.clear();
-                            PROXIMITY_RADIUS += 1000;
-                            initRetrofitPlaces(type);
-                        }
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<NearbySearchResponse> call, Throwable t) {
-
-            }
-        });
     }
 
 
