@@ -149,7 +149,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         googlePlacesUrl.append("location=" + latitude + "," + longitude);
         googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
         googlePlacesUrl.append("&type=" + restaurant);
-        googlePlacesUrl.append("&key=" + "AIzaSyCypnSaW_Yu3l4RanzHo3H7np2t7JOpSjI");
+        googlePlacesUrl.append("&key=" + "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
         System.out.println("/// " + googlePlacesUrl.toString());
         return googlePlacesUrl.toString();
     }
