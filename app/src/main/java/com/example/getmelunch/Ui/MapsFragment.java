@@ -103,26 +103,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
 
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
-            @Override
-            public void onPlaceSelected(Place place) {
-                Log.i(TAG, "Place: " + place.getName());
-                latitude = place.getLatLng().latitude;
-                longitude = place.getLatLng().longitude;
-                url = getUrl(latitude, longitude, "restaurant");
-                mMap.clear();
-                currentMarker = mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title(place.getName().toString()));
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(latitude, longitude)));
-                mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-//                getNearbyPlacesData(url);
-            }
-
-            @Override
-            public void onError(Status status) {
-                Log.i(TAG, "An error occurred: " + status);
-            }
-        });
-
     }
 
     private void getNearbyPlacesData(String url) {
@@ -131,6 +111,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
                 if (response.isSuccessful()) {
+                    System.out.println("///response: " + response.body());
                     for (int i = 0; i < response.body().getResults().size(); i++) {
                         mMap.addMarker(new MarkerOptions().position(new LatLng(response.body().getResults().get(i).getGeometry().getLocation().getLatitude(), response.body().getResults().get(i).getGeometry().getLocation().getLongitude())).title(response.body().getResults().get(i).getName()));
                     }
