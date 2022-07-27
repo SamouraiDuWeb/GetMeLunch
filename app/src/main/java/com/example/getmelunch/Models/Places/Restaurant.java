@@ -14,7 +14,7 @@ public class Restaurant implements Serializable {
     private String lng;
     private String address;
     private int count;
-    private long rating;
+    private float rating;
     private Boolean openNow;
     private String phoneNumber;
     private String placeId;
@@ -34,6 +34,25 @@ public class Restaurant implements Serializable {
     @SerializedName("opening_hours")
     @Expose
     private NearbyPlaceOpeningHours openingHours;
+
+    //constructor
+    public Restaurant(String id, String name, String lat, String lng, String address, int count, float rating, Boolean openNow, String phoneNumber, String placeId, Geometry geometry, String vicinity, List<PlacePhotos> photos, NearbyPlaceOpeningHours openingHours) {
+        this.id = id;
+        this.name = name;
+        this.lat = lat;
+        this.lng = lng;
+        this.address = address;
+        this.count = count;
+        this.rating = rating;
+        this.openNow = openNow;
+        this.phoneNumber = phoneNumber;
+        this.placeId = placeId;
+        this.geometry = geometry;
+        this.vicinity = vicinity;
+        this.photos = photos;
+        this.openingHours = openingHours;
+    }
+
 
     public List<PlacePhotos> getPhotos() {
         return photos;
@@ -88,11 +107,11 @@ public class Restaurant implements Serializable {
         this.count = count;
     }
 
-    public long getRating() {
+    public float getRating() {
         return rating;
     }
 
-    public void setRating(long rating) {
+    public void setRating(float rating) {
         this.rating = rating;
     }
 

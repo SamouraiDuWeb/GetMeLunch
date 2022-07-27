@@ -124,8 +124,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
         private void getDistance(Restaurant restaurant) {
             Location endPoint = new Location("restaurantLocation");
-            endPoint.setLatitude(restaurant.getGeometry().getLocation().getLatitude());
-            endPoint.setLongitude(restaurant.getGeometry().getLocation().getLongitude());
+            endPoint.setLatitude(restaurant.getGeometry().getLocation().getLat());
+            endPoint.setLongitude(restaurant.getGeometry().getLocation().getLng());
             long distance = (long) currentLocation.distanceTo(endPoint);
             restaurantDistance.setText(String.format("%s m", distance));
         }

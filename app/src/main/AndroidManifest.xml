@@ -51,6 +51,11 @@
                 <data android:scheme="@string/fb_login_protocol_scheme" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".Ui.DetailRestaurant"
+            android:exported="true"
+            android:launchMode="singleTop"/>
     </application>
 
 </manifest>

@@ -9,23 +9,13 @@ public class Geometry {
 
     @SerializedName("location")
     @Expose
-    private Location location;
+    private PlaceLocation location;
 
-    /**
-     *
-     * @return
-     * The location
-     */
-    public Location getLocation() {
+    public PlaceLocation getLocation() {
         return location;
     }
 
-    /**
-     *
-     * @param location
-     * The location
-     */
-    public void setLocation(Location location) {
+    public void setLocation(PlaceLocation location) {
         this.location = location;
     }
 }

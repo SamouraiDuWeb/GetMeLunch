@@ -7,9 +7,9 @@ import androidx.fragment.app.Fragment;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,14 +20,11 @@ import android.widget.Toast;
 import com.example.getmelunch.Di.Place.PlacesService;
 import com.example.getmelunch.Di.Place.RetrofitBuilder;
 import com.example.getmelunch.Models.Places.NearbySearchResponse;
+import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationAvailability;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -41,19 +38,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.gson.Gson;
 
 import java.util.Arrays;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.http.Query;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
@@ -107,20 +99,35 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private void getNearbyPlacesData(String url) {
         Call<NearbySearchResponse> call = service.getNearbyPlaces(url);
+        System.out.println("/// " + call.request().url());
         call.enqueue(new Callback<NearbySearchResponse>() {
             @Override
             public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
+                System.out.println("///response: " + response.body());
                 if (response.isSuccessful()) {
                     System.out.println("///response: " + response.body());
                     for (int i = 0; i < response.body().getResults().size(); i++) {
-                        mMap.addMarker(new MarkerOptions().position(new LatLng(response.body().getResults().get(i).getGeometry().getLocation().getLatitude(), response.body().getResults().get(i).getGeometry().getLocation().getLongitude())).title(response.body().getResults().get(i).getName()));
+
+                        LatLng latLng = new LatLng(response.body().getResults().get(i).getGeometry().getLocation().getLat(),
+                                response.body().getResults().get(i).getGeometry().getLocation().getLng());
+                        System.out.println("/// latlng " + latLng);
+                        MarkerOptions markerOptions = new MarkerOptions()
+                                .position(latLng)
+                                .title(response.body().getResults().get(i).getName())
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                                .snippet(response.body().getResults().get(i).getVicinity());
+                        Marker mapMarker = mMap.addMarker(markerOptions);
+                        if (mapMarker != null) {
+                            mapMarker.showInfoWindow();
+                        }
+                        System.out.println("///response: " + response.body().getResults().get(i).getName());
                     }
                 }
             }
 
             @Override
             public void onFailure(Call<NearbySearchResponse> call, Throwable t) {
-                Log.i(TAG, "onFailure: " + t.getMessage());
+                Log.i(TAG, "///: " + t.getMessage());
             }
         });
     }
@@ -131,7 +138,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
         googlePlacesUrl.append("&type=" + restaurant);
         googlePlacesUrl.append("&key=" + "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
-        System.out.println("/// " + googlePlacesUrl.toString());
+        System.out.println("///url " + googlePlacesUrl.toString());
         return googlePlacesUrl.toString();
     }
 
@@ -142,9 +149,16 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         }
-
-        System.out.println("///" + currentLocation);
         setUpLocation();
+        mMap.setMyLocationEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setZoomControlsEnabled(true);
+    }
+
+    private void getDetailRestaurant(Restaurant restaurant) {
+        Intent intent = new Intent(getContext(), DetailRestaurant.class);
+        intent.putExtra("restaurant", restaurant);
+        startActivity(intent);
     }
 
     @SuppressLint("MissingPermission")
