@@ -8,12 +8,14 @@ import android.location.Location;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Looper;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,10 +36,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.CancellationToken;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.gson.Gson;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +51,8 @@ import retrofit2.Response;
 
 public class ListFragment extends Fragment implements OnItemClickListener<Restaurant> {
 
+    private static final int REQUEST_CODE = 200;
+    private static final int PROXIMITY_RADIUS = 10000;
     private List<Restaurant> recyclerViewRestaurants;
     private AutocompleteSessionToken token;
     private RestaurantAdapter adapter;
@@ -73,7 +79,6 @@ public class ListFragment extends Fragment implements OnItemClickListener<Restau
 
         Places.initialize(getContext(), getString(R.string.google_maps_key));
         placesService = new RetrofitBuilder().getRetrofitApi();
-        token = AutocompleteSessionToken.newInstance();
 
         setUpLocationUpdate();
         return view;
@@ -123,15 +128,33 @@ public class ListFragment extends Fragment implements OnItemClickListener<Restau
     }
 
     private void getCurrentLocation() {
-        if (ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-            return;
+        fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
         }
-        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(location ->
-                currentLocation = location);
-        if (currentLocation == null) {
-        }
-        getPlaces("restaurant");
+        fusedLocationProviderClient.getLastLocation().addOnSuccessListener(getActivity(), new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                if (location != null) {
+                    System.out.println("///: " + location.getLatitude() + " " + location.getLongitude());
+                    currentLocation = location;
+                    double latitude = currentLocation.getLatitude();
+                    double longitude = currentLocation.getLongitude();
+                    String url = getUrl(latitude, longitude, "restaurant");
+                    getPlaces(url);
+                }
+            }
+        });
+    }
+
+    private String getUrl(double latitude, double longitude, String restaurant) {
+        StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
+        googlePlacesUrl.append("location=" + latitude + "," + longitude);
+        googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
+        googlePlacesUrl.append("&type=" + restaurant);
+        googlePlacesUrl.append("&key=" + "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
+        System.out.println("///url " + googlePlacesUrl.toString());
+        return googlePlacesUrl.toString();
     }
 
     private void stopLocationUpdate() {
@@ -139,40 +162,38 @@ public class ListFragment extends Fragment implements OnItemClickListener<Restau
         Log.d("TAG", "stopLocationUpdate: success");
     }
 
-    private void getPlaces(String placeName) {
-        if ((ContextCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) && currentLocation != null) {
-            String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location="
-                    + currentLocation.getLatitude() + "," + currentLocation.getLongitude()
-                    + "&radius=" + radius + "&type=" + placeName + "&key=" + getString(R.string.google_maps_key);
+    private void getPlaces(String url) {
 
-            Call<NearbySearchResponse> call = placesService.getNearbyPlaces(url);
-            call.enqueue(new Callback<NearbySearchResponse>() {
-                @Override
-                public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
-                    System.out.println("///" + response.body().getResults().size());
-                    if (response.isSuccessful()) {
-                        if (response.body().getResults().size() > 0) {
-                            adapter.updateRestaurantList(response.body().getResults(), currentLocation, ListFragment.this);
-                        } else {
-                            Toast.makeText(requireContext(), "No results found", Toast.LENGTH_SHORT).show();
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "Error", Toast.LENGTH_SHORT).show();
+        Call<NearbySearchResponse> call = placesService.getNearbyPlaces(url);
+        System.out.println("/// " + call.request().url());
+        call.enqueue(new Callback<NearbySearchResponse>() {
+            @Override
+            public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
+                if (response.isSuccessful()) {
+                    NearbySearchResponse nearbySearchResponse = response.body();
+                    if (nearbySearchResponse != null) {
+                        recyclerViewRestaurants = nearbySearchResponse.getResults();
+                        OnItemClickListener<Restaurant> listener = ListFragment.this;
+                        adapter = new RestaurantAdapter().updateRestaurantList(recyclerViewRestaurants, currentLocation, listener);
+                        RecyclerView recyclerView = getView().findViewById(R.id.rv_restaurants);
+                        recyclerView.setAdapter(adapter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        System.out.println("/// " + recyclerViewRestaurants.size());
                     }
                 }
-                @Override
-                public void onFailure(Call<NearbySearchResponse> call, Throwable t) {
-                    Log.d("TAG", "///: " + t.getMessage());
-                }
-            });
-        }
+            }
+
+            @Override
+            public void onFailure(Call<NearbySearchResponse> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
     public void onItemClicked(Restaurant restaurant) {
         Intent intent = new Intent(requireActivity(), DetailRestaurant.class);
-        intent.putExtra("restaurant", restaurant);
+        intent.putExtra("restaurant", (Serializable) restaurant);
         startActivity(intent);
     }
 

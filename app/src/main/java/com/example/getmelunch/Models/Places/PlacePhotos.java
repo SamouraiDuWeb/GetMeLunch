@@ -62,7 +62,7 @@ public class PlacePhotos implements Serializable {
 
     public String getPhotoUrl() {
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=";
-        String key = "&key=" + R.string.google_maps_key;
+        String key = "&key=" + "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk";
         return url + getPhotoReference() + key;
     }
 }

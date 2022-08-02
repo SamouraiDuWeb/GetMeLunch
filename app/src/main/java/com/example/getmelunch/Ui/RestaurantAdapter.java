@@ -28,11 +28,12 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     Context context;
     final UserHelper userHelper = UserHelper.getInstance();
 
-    public void updateRestaurantList(List<Restaurant> restaurants, Location currentLocation,
+    public RestaurantAdapter updateRestaurantList(List<Restaurant> restaurants, Location currentLocation,
                                      OnItemClickListener<Restaurant> listener) {
         this.restaurants = restaurants;
         this.currentLocation = currentLocation;
         this.listener = listener;
+        return this;
     }
 
     @NonNull
@@ -45,12 +46,12 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     @Override
     public void onBindViewHolder(@NonNull RestaurantAdapter.ViewHolder holder, int position) {
-
+        holder.bindView(restaurants.get(position));
     }
 
     @Override
     public int getItemCount() {
-        return 0;
+        return restaurants.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,11 +79,11 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
             restaurantRating = itemView.findViewById(R.id.item_rating);
 
             restaurantName.setText(restaurant.getName());
-            restaurantAddress.setText(restaurant.getAddress());
+            restaurantAddress.setText(restaurant.getVicinity());
             getPhoto(restaurant);
             getRating(restaurant);
             getDistance(restaurant);
-            getOpen(restaurant);
+//            getOpen(restaurant);
             getWorkmates(restaurant);
         }
 

@@ -1,9 +1,5 @@
 package com.example.getmelunch.Ui;
 
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -11,11 +7,16 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
 
 import com.example.getmelunch.Di.Place.PlacesService;
 import com.example.getmelunch.Di.Place.RetrofitBuilder;
@@ -23,8 +24,6 @@ import com.example.getmelunch.Models.Places.NearbySearchResponse;
 import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
-import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,12 +35,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
-import com.google.firebase.auth.FirebaseAuth;
 
-import java.util.Arrays;
+import java.io.Serializable;
+import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,13 +53,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private double latitude, longitude;
     String url;
     private int PROXIMITY_RADIUS = 10000;
-    private LocationRequest locationRequest;
-    private LocationCallback locationCallback;
-    private FirebaseAuth firebaseAuth;
     private Context context;
     private Marker currentMarker;
-    private AutocompleteSessionToken token;
-    private String query;
+
     private PlacesService service;
 
     @Override
@@ -79,7 +71,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         Places.initialize(context.getApplicationContext(), String.valueOf(R.string.google_maps_key));
         service = RetrofitBuilder.getRetrofitApi();
-        token = AutocompleteSessionToken.newInstance();
 
         return view;
     }
@@ -89,12 +80,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mMap = googleMap;
         setUpMap();
         getAutoComplete();
+        mMap.setOnInfoWindowClickListener(currentMarker ->
+                getDetailRestaurant((Restaurant) currentMarker.getTag()));
     }
 
     private void getAutoComplete() {
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-
+        if (!Places.isInitialized()) {
+            Places.initialize(context.getApplicationContext(), "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
+        }
     }
 
     private void getNearbyPlacesData(String url) {
@@ -111,6 +104,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         LatLng latLng = new LatLng(response.body().getResults().get(i).getGeometry().getLocation().getLat(),
                                 response.body().getResults().get(i).getGeometry().getLocation().getLng());
                         System.out.println("/// latlng " + latLng);
+                        Restaurant currentPlace = response.body().getResults().get(i);
                         MarkerOptions markerOptions = new MarkerOptions()
                                 .position(latLng)
                                 .title(response.body().getResults().get(i).getName())
@@ -119,6 +113,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                         Marker mapMarker = mMap.addMarker(markerOptions);
                         if (mapMarker != null) {
                             mapMarker.showInfoWindow();
+                            mapMarker.setTag(currentPlace);
                         }
                         System.out.println("///response: " + response.body().getResults().get(i).getName());
                     }
@@ -157,7 +152,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private void getDetailRestaurant(Restaurant restaurant) {
         Intent intent = new Intent(getContext(), DetailRestaurant.class);
-        intent.putExtra("restaurant", restaurant);
+        intent.putExtra("restaurant", (Serializable) restaurant);
         startActivity(intent);
     }
 
