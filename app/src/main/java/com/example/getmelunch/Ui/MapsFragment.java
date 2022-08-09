@@ -84,7 +84,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         setUpMap();
-        autoCompleteSearch();
+//        autoCompleteSearch();
         mMap.setOnInfoWindowClickListener(currentMarker ->
                 getDetailRestaurant((Restaurant) currentMarker.getTag()));
     }
