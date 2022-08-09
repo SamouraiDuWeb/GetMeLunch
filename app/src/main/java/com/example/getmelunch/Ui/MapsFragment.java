@@ -23,6 +23,7 @@ import com.example.getmelunch.Di.Place.RetrofitBuilder;
 import com.example.getmelunch.Models.Places.NearbySearchResponse;
 import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -35,8 +36,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Objects;
 
 import retrofit2.Call;
@@ -79,15 +84,30 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         setUpMap();
-        getAutoComplete();
+        autoCompleteSearch();
         mMap.setOnInfoWindowClickListener(currentMarker ->
                 getDetailRestaurant((Restaurant) currentMarker.getTag()));
     }
 
-    private void getAutoComplete() {
-        if (!Places.isInitialized()) {
-            Places.initialize(context.getApplicationContext(), "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
-        }
+    private void autoCompleteSearch() {
+        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
+                getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onError(@NonNull Status status) {
+                Log.d(TAG, "///onError: " + status.getStatusMessage());
+            }
+
+            @Override
+            public void onPlaceSelected(@NonNull Place place) {
+                System.out.println("/// " + place.getName());
+                LatLng latLng = place.getLatLng();
+                if (latLng != null) {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                }
+            }
+        });
     }
 
     private void getNearbyPlacesData(String url) {
