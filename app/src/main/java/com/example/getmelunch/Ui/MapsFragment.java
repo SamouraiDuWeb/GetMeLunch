@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +19,9 @@ import androidx.fragment.app.Fragment;
 
 import com.example.getmelunch.Di.Place.PlacesService;
 import com.example.getmelunch.Di.Place.RetrofitBuilder;
+import com.example.getmelunch.Models.Places.Geometry;
 import com.example.getmelunch.Models.Places.NearbySearchResponse;
+import com.example.getmelunch.Models.Places.PlaceLocation;
 import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
 import com.google.android.gms.common.api.Status;
@@ -37,12 +38,13 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
+import java.io.Externalizable;
 import java.io.Serializable;
 import java.util.Arrays;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -59,7 +61,10 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     String url;
     private int PROXIMITY_RADIUS = 10000;
     private Context context;
+    private Place currentPlace;
     private Marker currentMarker;
+    private Restaurant currentRestaurant;
+    private String searchUrl;
 
     private PlacesService service;
 
@@ -84,58 +89,86 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         setUpMap();
-//        autoCompleteSearch();
+        autoCompleteSearch();
         mMap.setOnInfoWindowClickListener(currentMarker ->
                 getDetailRestaurant((Restaurant) currentMarker.getTag()));
     }
 
     private void autoCompleteSearch() {
+        Places.initialize(context.getApplicationContext(), "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
         AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
                 getChildFragmentManager().findFragmentById(R.id.autocomplete_fragment);
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        System.out.println("/// autocompletefragment : " + autocompleteFragment);
+        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS, Place.Field.PHOTO_METADATAS, Place.Field.TYPES));
+        autocompleteFragment.setTypeFilter(TypeFilter.ESTABLISHMENT);
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onError(@NonNull Status status) {
-                Log.d(TAG, "///onError: " + status.getStatusMessage());
+                Log.i(TAG, "onError: " + status.getStatusMessage());
             }
 
             @Override
             public void onPlaceSelected(@NonNull Place place) {
-                System.out.println("/// " + place.getName());
-                LatLng latLng = place.getLatLng();
-                if (latLng != null) {
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
-                }
+
+                searchUrl = getUrl(place.getLatLng().latitude, place.getLatLng().longitude, place.getName());
+                Call<NearbySearchResponse> call = service.getNearbySearch(searchUrl);
+                call.enqueue(new Callback<NearbySearchResponse>() {
+                    @Override
+                    public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
+                        if (response.isSuccessful()) {
+                            NearbySearchResponse nearbySearchResponse = response.body();
+                            if (nearbySearchResponse.getResults().size() > 0) {
+                                currentRestaurant = nearbySearchResponse.getResults().get(0);
+                                currentMarker.setTag(currentRestaurant);
+                                currentMarker.showInfoWindow();
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(currentRestaurant.
+                                                getGeometry().getLocation().getLat(),
+                                                currentRestaurant.getGeometry().getLocation().getLng()))
+                                        .title(currentRestaurant.getName()))
+                                        .setTag(currentRestaurant);
+                                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentRestaurant.getGeometry().toLatLng(), 15));
+                            }
+                        }
+                    }
+                    @Override
+                    public void onFailure(Call<NearbySearchResponse> call, Throwable t) {
+                        Log.i(TAG, "onFailure: " + t.getMessage());
+                    }
+                });
             }
         });
     }
 
     private void getNearbyPlacesData(String url) {
+
         Call<NearbySearchResponse> call = service.getNearbyPlaces(url);
         System.out.println("/// " + call.request().url());
+
         call.enqueue(new Callback<NearbySearchResponse>() {
             @Override
             public void onResponse(Call<NearbySearchResponse> call, Response<NearbySearchResponse> response) {
-                System.out.println("///response: " + response.body());
                 if (response.isSuccessful()) {
-                    System.out.println("///response: " + response.body());
                     for (int i = 0; i < response.body().getResults().size(); i++) {
 
                         LatLng latLng = new LatLng(response.body().getResults().get(i).getGeometry().getLocation().getLat(),
                                 response.body().getResults().get(i).getGeometry().getLocation().getLng());
-                        System.out.println("/// latlng " + latLng);
+
                         Restaurant currentPlace = response.body().getResults().get(i);
+                        String name = currentPlace.getName();
+                        String vicinity = currentPlace.getVicinity();
+
                         MarkerOptions markerOptions = new MarkerOptions()
                                 .position(latLng)
-                                .title(response.body().getResults().get(i).getName())
+                                .title(name)
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                                .snippet(response.body().getResults().get(i).getVicinity());
+                                .snippet(vicinity);
+
                         Marker mapMarker = mMap.addMarker(markerOptions);
                         if (mapMarker != null) {
                             mapMarker.showInfoWindow();
                             mapMarker.setTag(currentPlace);
                         }
-                        System.out.println("///response: " + response.body().getResults().get(i).getName());
                     }
                 }
             }
@@ -153,7 +186,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
         googlePlacesUrl.append("&type=" + restaurant);
         googlePlacesUrl.append("&key=" + "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
-        System.out.println("///url " + googlePlacesUrl.toString());
         return googlePlacesUrl.toString();
     }
 
@@ -204,13 +236,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                 .position(new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude()))
                 .title("Current Location")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-                .snippet("youu");
+                .snippet("you are here");
 
         mMap.addMarker(markerOptions);
 
         mMap.animateCamera(cameraUpdate);
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

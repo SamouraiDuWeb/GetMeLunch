@@ -4,12 +4,17 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.squareup.picasso.Picasso;
 
@@ -25,16 +30,21 @@ public class DetailRestaurant extends AppCompatActivity {
     private LinearLayout llRestaurantWebsite;
     private RecyclerView rvRestaurantParticipating;
 
+    PlacesClient placesClient;
+
     //Activity for the detail of the restaurant
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_restaurant);
         initView();
+
+        PlacesClient placesClient = Places.createClient(this);
         //Get the restaurant from the intent
         Restaurant restaurant = (Restaurant) getIntent().getSerializableExtra("restaurant");
-        bindData(restaurant);
-
+        if (restaurant != null) {
+            bindData(restaurant);
+        }
     }
 
     private void bindData(Restaurant restaurant) {

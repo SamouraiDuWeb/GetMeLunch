@@ -1,8 +1,5 @@
 package com.example.getmelunch.Models.Places;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -56,11 +53,12 @@ public class Restaurant implements Serializable {
         this.openingHours = openingHours;
     }
 
+    public Restaurant() {
+    }
 
     public List<PlacePhotos> getPhotos() {
         return photos;
     }
-
 
     public String getId() {
         return id;
@@ -146,12 +144,17 @@ public class Restaurant implements Serializable {
         this.geometry = geometry;
     }
 
-
-    public NearbyPlaceOpeningHours getOpeningHours() {
-        return openingHours;
-    }
-
+    /**
+     * @param openingHours The opening hours
+     */
     public void setOpeningHours(NearbyPlaceOpeningHours openingHours) {
         this.openingHours = openingHours;
+    }
+
+    /**
+     * @return The opening hours
+     */
+    public NearbyPlaceOpeningHours getOpeningHours() {
+        return openingHours;
     }
 }

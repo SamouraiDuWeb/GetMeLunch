@@ -15,6 +15,9 @@ public class PlaceLocation implements Serializable {
     @Expose
     private Double lng;
 
+    public PlaceLocation(double latitude, double longitude) {
+    }
+
     public Double getLat() {
         return lat;
     }

@@ -1,9 +1,5 @@
 package com.example.getmelunch.Models.Places;
 
-import android.os.Parcelable;
-
-import com.example.getmelunch.BuildConfig;
-import com.example.getmelunch.R;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -64,5 +60,9 @@ public class PlacePhotos implements Serializable {
         String url = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=";
         String key = "&key=" + "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk";
         return url + getPhotoReference() + key;
+    }
+
+    public void setPhotoUrl(String photoReference) {
+        this.photoReference = photoReference;
     }
 }

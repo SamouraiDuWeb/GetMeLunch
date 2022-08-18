@@ -2,6 +2,7 @@ package com.example.getmelunch.Models.Places;
 
 import android.location.Location;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -19,5 +20,9 @@ public class Geometry implements Serializable {
 
     public void setLocation(PlaceLocation location) {
         this.location = location;
+    }
+
+    public LatLng toLatLng() {
+        return new LatLng(this.location.getLat(), this.location.getLng());
     }
 }
