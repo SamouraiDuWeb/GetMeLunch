@@ -1,4 +1,4 @@
-package com.example.getmelunch.Ui;
+package com.example.getmelunch.Ui.List;
 
 import android.content.Context;
 import android.location.Location;
@@ -15,6 +15,7 @@ import com.example.getmelunch.Di.User.UserHelper;
 import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
 import com.example.getmelunch.Utils.OnItemClickListener;
+import com.example.getmelunch.databinding.RestaurantItemBinding;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 
@@ -40,8 +41,10 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
     @Override
     public RestaurantAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.restaurant_item, parent, false);
-        return new ViewHolder(view);
+        RestaurantItemBinding binding = RestaurantItemBinding.inflate(inflater, parent, false);
+        context = parent.getContext();
+
+        return new ViewHolder(binding);
     }
 
     @Override
@@ -56,30 +59,21 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
-        ImageView restaurantRating, restaurantImage, restaurantWorkmatesIcon;
-        TextView restaurantName, restaurantAddress, restaurantDistance, restaurantOpen, restaurantWorkmates;
+        private final RestaurantItemBinding binding;
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
+        public ViewHolder(@NonNull RestaurantItemBinding itemBinding) {
+            super(itemBinding.getRoot());
+            binding = itemBinding;
 
             itemView.setOnClickListener(v -> listener.onItemClicked(restaurants.get(getAdapterPosition())));
         }
 
 
 
-        public void bindView(Restaurant restaurant) {
+        public void bindView(Restaurant restaurant) { ;
 
-            restaurantName = itemView.findViewById(R.id.item_restaurant_name);
-            restaurantAddress = itemView.findViewById(R.id.item_restaurant_address);
-            restaurantDistance = itemView.findViewById(R.id.item_distance);
-            restaurantOpen = itemView.findViewById(R.id.item_opening_hours);
-            restaurantWorkmates = itemView.findViewById(R.id.item_nb_workmates_counter);
-            restaurantWorkmatesIcon = itemView.findViewById(R.id.item_nb_workmates_icon);
-            restaurantImage = itemView.findViewById(R.id.item_restaurant_photo);
-            restaurantRating = itemView.findViewById(R.id.item_rating);
-
-            restaurantName.setText(restaurant.getName());
-            restaurantAddress.setText(restaurant.getVicinity());
+            binding.itemRestaurantName.setText(restaurant.getName());
+            binding.itemRestaurantAddress.setText(restaurant.getVicinity());
             getPhoto(restaurant);
             getRating(restaurant);
             getDistance(restaurant);
@@ -97,8 +91,8 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
                             if (placeId.equals(restaurant.getPlaceId())) {
                                 workmateNumber[0]++;
                                 if (workmateNumber[0] > 0) {
-                                    restaurantWorkmatesIcon.setVisibility(View.VISIBLE);
-                                    restaurantWorkmates.setText(context.getString(
+                                    binding.itemNbWorkmatesIcon.setVisibility(View.VISIBLE);
+                                    binding.itemNbWorkmatesCounter.setText(context.getString(
                                             R.string.workmate_counter, workmateNumber[0]));
                                 }
                             }
@@ -111,15 +105,15 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
         private void getOpen(Restaurant restaurant) {
             if (restaurant.getOpeningHours() != null) {
                 if (restaurant.getOpeningHours().getOpenNow().toString().equals("true")) {
-                    restaurantOpen.setText(R.string.open);
-                    restaurantOpen.setTextColor(context.getResources().getColor(R.color.green));
+                    binding.itemOpeningHours.setText(R.string.open);
+                    binding.itemOpeningHours.setTextColor(context.getResources().getColor(R.color.green));
                 } else {
-                    restaurantOpen.setText(R.string.closed);
-                    restaurantOpen.setTextColor(context.getResources().getColor(R.color.red_dark));
+                    binding.itemOpeningHours.setText(R.string.closed);
+                    binding.itemOpeningHours.setTextColor(context.getResources().getColor(R.color.red_dark));
                 }
             } else {
-                restaurantOpen.setText(R.string.no_opening_hours);
-                restaurantOpen.setTextColor(context.getResources().getColor(R.color.black));
+                binding.itemOpeningHours.setText(R.string.no_opening_hours);
+                binding.itemOpeningHours.setTextColor(context.getResources().getColor(R.color.black));
             }
         }
 
@@ -128,7 +122,7 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
             endPoint.setLatitude(restaurant.getGeometry().getLocation().getLat());
             endPoint.setLongitude(restaurant.getGeometry().getLocation().getLng());
             long distance = (long) currentLocation.distanceTo(endPoint);
-            restaurantDistance.setText(String.format("%s m", distance));
+            binding.itemDistance.setText(String.format("%s m", distance));
         }
 
         private void getRating(Restaurant restaurant) {
@@ -138,11 +132,11 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
                             .load(R.drawable.star_three)
                             .fit()
                             .centerCrop()
-                            .into(restaurantImage);
+                            .into(binding.itemRestaurantPhoto);
                 if (restaurant.getRating() < 4 && restaurant.getRating() >= 3)
-                    restaurantRating.setImageResource(R.drawable.star_two);
+                    binding.itemRating.setImageResource(R.drawable.star_two);
                 if (restaurant.getRating() < 3)
-                    restaurantRating.setImageResource(R.drawable.star_one);
+                    binding.itemRating.setImageResource(R.drawable.star_one);
             }
         }
 
@@ -152,13 +146,13 @@ public class RestaurantAdapter extends RecyclerView.Adapter<RestaurantAdapter.Vi
                         .load(restaurant.getPhotos().get(0).getPhotoUrl())
                         .fit()
                         .centerCrop()
-                        .into(restaurantImage);
+                        .into(binding.itemRestaurantPhoto);
             } else {
                 Picasso.get()
                         .load(R.drawable.image_not_available)
                         .fit()
                         .centerCrop()
-                        .into(restaurantImage);
+                        .into(binding.itemRestaurantPhoto);
             }
         }
     }

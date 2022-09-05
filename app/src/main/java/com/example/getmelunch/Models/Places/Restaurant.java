@@ -8,15 +8,18 @@ import java.util.List;
 
 public class Restaurant implements Serializable {
 
-    private String id;
+    @SerializedName("name")
+    @Expose
     private String name;
-    private String lat;
-    private String lng;
-    private String address;
-    private int count;
+
+    @SerializedName("rating")
+    @Expose
     private float rating;
-    private Boolean openNow;
+
     private String phoneNumber;
+
+    @SerializedName("place_id")
+    @Expose
     private String placeId;
 
     @SerializedName("geometry")
@@ -35,22 +38,19 @@ public class Restaurant implements Serializable {
     @Expose
     private NearbyPlaceOpeningHours openingHours;
 
+    private String docId;
+
     //constructor
-    public Restaurant(String id, String name, String lat, String lng, String address, int count, float rating, Boolean openNow, String phoneNumber, String placeId, Geometry geometry, String vicinity, List<PlacePhotos> photos, NearbyPlaceOpeningHours openingHours) {
-        this.id = id;
+    public Restaurant(String name,String docId, float rating, String phoneNumber, String placeId, Geometry geometry, String vicinity, List<PlacePhotos> photos, NearbyPlaceOpeningHours openingHours) {
         this.name = name;
-        this.lat = lat;
-        this.lng = lng;
-        this.address = address;
-        this.count = count;
         this.rating = rating;
-        this.openNow = openNow;
         this.phoneNumber = phoneNumber;
         this.placeId = placeId;
         this.geometry = geometry;
         this.vicinity = vicinity;
         this.photos = photos;
         this.openingHours = openingHours;
+        this.docId = docId;
     }
 
     public Restaurant() {
@@ -58,14 +58,6 @@ public class Restaurant implements Serializable {
 
     public List<PlacePhotos> getPhotos() {
         return photos;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -76,28 +68,12 @@ public class Restaurant implements Serializable {
         this.name = name;
     }
 
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int count) {
-        this.count = count;
-    }
-
     public float getRating() {
         return rating;
     }
 
     public void setRating(float rating) {
         this.rating = rating;
-    }
-
-    public Boolean getOpenNow() {
-        return openNow;
-    }
-
-    public void setOpenNow(Boolean openNow) {
-        this.openNow = openNow;
     }
 
     public String getPhoneNumber() {
@@ -116,45 +92,35 @@ public class Restaurant implements Serializable {
         this.placeId = placeId;
     }
 
-    /**
-     * @return The vicinity
-     */
     public String getVicinity() {
         return vicinity;
     }
 
-    /**
-     * @param vicinity The vicinity
-     */
     public void setVicinity(String vicinity) {
         this.vicinity = vicinity;
     }
 
-    /**
-     * @return The geometry
-     */
     public Geometry getGeometry() {
         return geometry;
     }
 
-    /**
-     * @param geometry The geometry
-     */
     public void setGeometry(Geometry geometry) {
         this.geometry = geometry;
     }
 
-    /**
-     * @param openingHours The opening hours
-     */
     public void setOpeningHours(NearbyPlaceOpeningHours openingHours) {
         this.openingHours = openingHours;
     }
 
-    /**
-     * @return The opening hours
-     */
     public NearbyPlaceOpeningHours getOpeningHours() {
         return openingHours;
+    }
+
+    public String getDocId() {
+        return docId;
+    }
+
+    public void setDocId(String docId) {
+        this.docId = docId;
     }
 }

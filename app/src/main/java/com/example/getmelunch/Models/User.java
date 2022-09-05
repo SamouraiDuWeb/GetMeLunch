@@ -6,28 +6,35 @@ import java.io.Serializable;
 
 public class User implements Serializable {
 
-    private String id;
+    private String uid;
     private String name;
     @Nullable
-    private String urlImage;
-    private String placeId;
+    private String pictureUrl;
+    @Nullable
+    private String lunchSpotId;
+    @Nullable
+    private String lunchSpotName;
+    @Nullable
+    private String lunchSpotAddress;
+    private Boolean isNotificationEnabled;
 
-    public User() {
-    }
+    public User () {}
 
-    public User(String id, String name, String urlImage, String placeId) {
-        this.id = id;
+    public User(String uid, String name, @Nullable String pictureUrl, @Nullable String lunchSpotId, @Nullable String lunchSpotName, @Nullable String lunchSpotAddress) {
+        this.uid = uid;
         this.name = name;
-        this.urlImage = urlImage;
-        this.placeId = placeId;
+        this.pictureUrl = pictureUrl;
+        this.lunchSpotId = lunchSpotId;
+        this.lunchSpotName = lunchSpotName;
+        this.lunchSpotAddress = lunchSpotAddress;
     }
 
-    public String getId() {
-        return id;
+    public String getUid() {
+        return uid;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUid(String uid) {
+        this.uid = uid;
     }
 
     public String getName() {
@@ -39,19 +46,46 @@ public class User implements Serializable {
     }
 
     @Nullable
-    public String getUrlImage() {
-        return urlImage;
+    public String getPictureUrl() {
+        return pictureUrl;
     }
 
-    public void setUrlImage(@Nullable String urlImage) {
-        this.urlImage = urlImage;
+    public void setPictureUrl(@Nullable String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 
-    public String getPlaceId() {
-        return placeId;
+    @Nullable
+    public String getLunchSpotId() {
+        return lunchSpotId;
     }
 
-    public void setPlaceId(String placeId) {
-        this.placeId = placeId;
+    public void setLunchSpotId(@Nullable String lunchSpotId) {
+        this.lunchSpotId = lunchSpotId;
+    }
+
+    @Nullable
+    public String getLunchSpotName() {
+        return lunchSpotName;
+    }
+
+    public void setLunchSpotName(@Nullable String lunchSpotName) {
+        this.lunchSpotName = lunchSpotName;
+    }
+
+    @Nullable
+    public String getLunchSpotAddress() {
+        return lunchSpotAddress;
+    }
+
+    public void setLunchSpotAddress(@Nullable String lunchSpotAddress) {
+        this.lunchSpotAddress = lunchSpotAddress;
+    }
+
+    public Boolean getNotificationEnabled() {
+        return isNotificationEnabled;
+    }
+
+    public void setNotificationEnabled(Boolean notificationEnabled) {
+        isNotificationEnabled = notificationEnabled;
     }
 }

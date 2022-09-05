@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
@@ -20,7 +21,9 @@
         app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="175dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_baseline_star_outline_24"
+        app:fabCustomSize="50dp"
+        android:tint="@color/quantum_googred500"
+        android:src="@drawable/ic_baseline_check_circle_outline_24"
         android:id="@+id/fab"/>
 
     <LinearLayout
@@ -59,92 +62,60 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_restaurant_details">
 
-        <LinearLayout
-            android:id="@+id/ll_restaurant_phone"
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mb_restaurant_phone"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/ll_restaurant_like"
-            app:layout_constraintHorizontal_bias="0.5"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:text="Call"
+            android:textColor="@color/quantum_googred500"
+            app:icon="@drawable/ic_baseline_phone_24"
+            app:iconGravity="top"
+            app:iconTint="@color/quantum_googred500"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/iv_restaurant_phone"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_baseline_phone_24" />
-
-            <TextView
-                android:id="@+id/tv_restaurant_phone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Call"
-                android:textAllCaps="true"
-                android:textColor="@color/quantum_googred500"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_restaurant_like"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mb_restaurant_like"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dp"
-            app:layout_constraintEnd_toStartOf="@+id/ll_restaurant_website"
-            app:layout_constraintStart_toEndOf="@+id/ll_restaurant_phone"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toStartOf="@+id/mb_restaurant_website"
+            app:layout_constraintStart_toEndOf="@+id/mb_restaurant_phone"
 
-            <ImageView
-                android:id="@+id/iv_restaurant_like"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_baseline_star_24" />
+            android:layout_marginTop="8dp"
+            android:background="@android:color/transparent"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:text="Like"
+            android:textColor="@color/quantum_googred500"
+            app:icon="@drawable/ic_baseline_star_outline_24"
+            app:iconGravity="top"
+            app:iconTint="@color/quantum_googred500"
+            app:layout_constraintTop_toTopOf="parent"
+            app:rippleColor="@color/quantum_googred500" />
 
-            <TextView
-                android:id="@+id/tv_restaurant_like"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Like"
-                android:textAllCaps="true"
-                android:textColor="@color/quantum_googred500"
-                android:textSize="15sp"
-                android:textStyle="bold" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/ll_restaurant_website"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/mb_restaurant_website"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:padding="10dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="10dp"
+            android:background="@android:color/transparent"
+            android:minWidth="48dp"
+            android:minHeight="48dp"
+            android:text="Website"
+            android:textColor="@color/quantum_googred500"
+            app:icon="@drawable/ic_baseline_language_24"
+            app:iconGravity="top"
+            app:iconTint="@color/quantum_googred500"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/ll_restaurant_like"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
-                android:id="@+id/iv_restaurant_website"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/ic_baseline_language_24" />
-
-            <TextView
-                android:id="@+id/tv_restaurant_website"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Website"
-                android:textAllCaps="true"
-                android:textStyle="bold"
-                android:textColor="@color/quantum_googred500"
-                android:textSize="15sp" />
-        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"

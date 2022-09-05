@@ -3,17 +3,25 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/drawable-v24/ic_baseline_local_dining_24.xml" value="0.245" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/drawable/star_one.xml" value="0.1" />
-        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_detail_restaurant.xml" value="0.23489583333333333" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_detail_restaurant.xml" value="0.33" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_facebook.xml" value="1.1928571428571428" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_login.xml" value="0.36666666666666664" />
-        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_main.xml" value="0.14722222222222223" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_main.xml" value="0.25" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/activity_maps.xml" value="0.18802083333333333" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/fragment_home.xml" value="0.25" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/fragment_list.xml" value="0.19739583333333333" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/fragment_maps.xml" value="0.19739583333333333" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/fragment_workmates.xml" value="0.33" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/header_navigation_drawer.xml" value="0.253125" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/restaurant_item.xml" value="0.25416666666666665" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/workmate_item.xml" value="0.23489583333333333" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/layout/workmates_item.xml" value="0.2328125" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/menu/activity_nav_drawer.xml" value="0.36666666666666664" />
         <entry key="..\:/Applications/GetMeLunch/app/src/main/res/menu/bottom_navigation_menu.xml" value="0.25052083333333336" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/menu/drawer_menu.xml" value="0.2390625" />
+        <entry key="..\:/Applications/GetMeLunch/app/src/main/res/menu/nav.xml" value="0.36666666666666664" />
       </map>
     </option>
   </component>

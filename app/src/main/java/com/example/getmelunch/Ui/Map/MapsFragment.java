@@ -1,4 +1,4 @@
-package com.example.getmelunch.Ui;
+package com.example.getmelunch.Ui.Map;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -19,11 +19,10 @@ import androidx.fragment.app.Fragment;
 
 import com.example.getmelunch.Di.Place.PlacesService;
 import com.example.getmelunch.Di.Place.RetrofitBuilder;
-import com.example.getmelunch.Models.Places.Geometry;
 import com.example.getmelunch.Models.Places.NearbySearchResponse;
-import com.example.getmelunch.Models.Places.PlaceLocation;
 import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
+import com.example.getmelunch.Ui.DetailRestaurant;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.maps.CameraUpdate;
@@ -42,7 +41,6 @@ import com.google.android.libraries.places.api.model.TypeFilter;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
 
-import java.io.Externalizable;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -67,6 +65,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private String searchUrl;
 
     private PlacesService service;
+
+    public void MapsFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
