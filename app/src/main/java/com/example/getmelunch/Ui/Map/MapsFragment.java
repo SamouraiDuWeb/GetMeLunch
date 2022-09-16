@@ -195,6 +195,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
+            mMap.setMyLocationEnabled(true);
         }
         setUpLocation();
         mMap.setMyLocationEnabled(true);

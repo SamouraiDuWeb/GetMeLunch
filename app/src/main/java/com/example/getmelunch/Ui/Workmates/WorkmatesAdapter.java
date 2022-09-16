@@ -54,7 +54,7 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
 
     @Override
     public int getItemCount() {
-        return 0;
+        return workmates.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -65,12 +65,7 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.View
             super(itemBinding.getRoot());
             binding = itemBinding;
 
-            itemBinding.workmateItem.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    listener.onItemClicked(workmates.get(getAdapterPosition()));
-                }
-            });
+            itemBinding.workmateItem.setOnClickListener(v -> listener.onItemClicked(workmates.get(getAdapterPosition())));
         }
 
         public void bindView(User workmate) {

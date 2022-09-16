@@ -3,10 +3,12 @@ package com.example.getmelunch.Models;
 import androidx.annotation.Nullable;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class User implements Serializable {
 
     private String uid;
+
     private String name;
     @Nullable
     private String pictureUrl;
@@ -16,17 +18,21 @@ public class User implements Serializable {
     private String lunchSpotName;
     @Nullable
     private String lunchSpotAddress;
+
     private Boolean isNotificationEnabled;
+
+    private List<String> favoriteRestaurants;
 
     public User () {}
 
-    public User(String uid, String name, @Nullable String pictureUrl, @Nullable String lunchSpotId, @Nullable String lunchSpotName, @Nullable String lunchSpotAddress) {
+    public User(String uid, String name, @Nullable String pictureUrl, @Nullable String lunchSpotId, @Nullable String lunchSpotName, @Nullable String lunchSpotAddress, List<String> favoriteRestaurants) {
         this.uid = uid;
         this.name = name;
         this.pictureUrl = pictureUrl;
         this.lunchSpotId = lunchSpotId;
         this.lunchSpotName = lunchSpotName;
         this.lunchSpotAddress = lunchSpotAddress;
+        this.favoriteRestaurants = favoriteRestaurants;
     }
 
     public String getUid() {
@@ -87,5 +93,13 @@ public class User implements Serializable {
 
     public void setNotificationEnabled(Boolean notificationEnabled) {
         isNotificationEnabled = notificationEnabled;
+    }
+
+    public List<String> getFavoriteRestaurants() {
+        return favoriteRestaurants;
+    }
+
+    public void setFavoriteRestaurants(List<String> favoriteRestaurants) {
+        this.favoriteRestaurants = favoriteRestaurants;
     }
 }

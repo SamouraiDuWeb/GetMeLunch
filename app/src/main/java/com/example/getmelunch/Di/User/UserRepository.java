@@ -3,9 +3,9 @@ package com.example.getmelunch.Di.User;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.MutableLiveData;
 
 import com.example.getmelunch.Models.User;
-import com.example.getmelunch.Utils.Constants;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,12 +14,12 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.Map;
-import java.util.Objects;
+import java.util.List;
 
 public final class UserRepository {
 
     private static volatile UserRepository instance;
+    private final MutableLiveData<List<User>> allCoworkers = new MutableLiveData<>();
 
     private UserRepository() {
     }
@@ -63,7 +63,7 @@ public final class UserRepository {
             String username = user.getDisplayName();
             String uid = user.getUid();
 
-            User userToCreate = new User(uid, username, pictureUrl, null, null, null);
+            User userToCreate = new User(uid, username, pictureUrl, null, null, null, null);
 
             Task<DocumentSnapshot> userData = getUserData();
 

@@ -26,6 +26,7 @@ import com.example.getmelunch.Models.Places.Restaurant;
 import com.example.getmelunch.R;
 import com.example.getmelunch.Ui.DetailRestaurant;
 import com.example.getmelunch.Utils.OnItemClickListener;
+import com.example.getmelunch.databinding.FragmentListBinding;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -58,6 +59,8 @@ public class ListFragment extends Fragment implements OnItemClickListener<Restau
     private String radius = "" + 1000;
     PlacesService placesService;
 
+    FragmentListBinding binding;
+
     public ListFragment() {
     }
 
@@ -67,15 +70,14 @@ public class ListFragment extends Fragment implements OnItemClickListener<Restau
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_list, container, false);
-
+        binding = FragmentListBinding.inflate(inflater, container, false);
         recyclerViewRestaurants = new ArrayList<>();
 
         Places.initialize(getContext(), getString(R.string.google_maps_key));
         placesService = new RetrofitBuilder().getRetrofitApi();
 
         setUpLocationUpdate();
-        return view;
+        return inflater.inflate(R.layout.fragment_list, container, false);
     }
 
     @Override

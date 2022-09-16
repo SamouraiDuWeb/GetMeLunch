@@ -337,6 +337,11 @@ public class DetailRestaurant extends AppCompatActivity {
         System.out.println("/// " + restaurant.getVicinity() + ", " + restaurant.getName());
 
         //image
+        Picasso.get()
+                .load(restaurant.getPhotos().get(0).getPhotoUrl())
+                .fit()
+                .centerCrop()
+                .into(binding.ivRestaurantImage);
         System.out.println(restaurant.getPhotos().get(0).getPhotoUrl());
     }
 }
