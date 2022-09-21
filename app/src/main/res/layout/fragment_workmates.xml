@@ -1,15 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Ui.Workmates.WorkmatesFragment">
+    tools:context=".Ui.Workmates.WorkmatesFragment"
+    android:background="@color/quantum_googred500">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/workmates_list"
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:id="@+id/workmates_list"-->
+<!--        android:layout_width="match_parent"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        tools:listitem="@layout/workmate_item"/>-->
+
+    <ListView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:listitem="@layout/workmate_item"/>
-
-
+        android:id="@+id/lv_restaurants"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@color/white"
+        tools:listitem="workmate_item" />
 </LinearLayout>

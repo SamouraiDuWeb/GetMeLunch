@@ -35,6 +35,9 @@ public class User implements Serializable {
         this.favoriteRestaurants = favoriteRestaurants;
     }
 
+    public User(String name, String lunchspotName, String pictureUrl) {
+    }
+
     public String getUid() {
         return uid;
     }
