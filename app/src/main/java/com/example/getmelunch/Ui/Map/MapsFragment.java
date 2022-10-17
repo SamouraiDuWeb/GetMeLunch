@@ -50,7 +50,7 @@ import retrofit2.Response;
 
 public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
-    private static final int REQUEST_CODE = 101;
+    private static final int REQUEST_CODE = 42;
     private static final String TAG = MapsFragment.class.getSimpleName();
     GoogleMap mMap;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -195,7 +195,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(getActivity(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_CODE);
-            mMap.setMyLocationEnabled(true);
         }
         setUpLocation();
         mMap.setMyLocationEnabled(true);

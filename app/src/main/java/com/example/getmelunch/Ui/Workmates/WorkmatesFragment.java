@@ -1,70 +1,88 @@
 package com.example.getmelunch.Ui.Workmates;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
 
 import com.example.getmelunch.Di.Place.PlaceHelper;
 import com.example.getmelunch.Di.User.UserHelper;
 import com.example.getmelunch.Models.User;
-import com.example.getmelunch.R;
-import com.example.getmelunch.Utils.OnItemClickListener;
 import com.example.getmelunch.databinding.FragmentWorkmatesBinding;
 import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class WorkmatesFragment extends Fragment {
 
-    ArrayList<User> users ;
+    ArrayList<User> users;
     private FragmentWorkmatesBinding binding;
-    OnItemClickListener<User> listener;
-    WorkmatesLvAdapter adapter;
+    com.example.getmelunch.Ui.Workmates.WorkmatesAdapter adapter;
+    RecyclerView listView;
     private final UserHelper userHelper = UserHelper.getInstance();
     private final PlaceHelper placeHelper = PlaceHelper.getInstance();
+    private ProgressDialog progressDialog;
+    ArrayList<User> user2 = new ArrayList<User>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
 
+
+    @SuppressLint("NotifyDataSetChanged")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentWorkmatesBinding.inflate(inflater, container, false);
 
-        users = new ArrayList<>();
-        adapter = new WorkmatesLvAdapter(this.requireContext(), R.id.lv_restaurants, users);
-        ListView listView = binding.lvRestaurants;
-        listView.setAdapter(adapter);
+        progressDialog = new ProgressDialog(requireActivity());
+        progressDialog.setCancelable(false);
+        progressDialog.setMessage("fetching data...");
+        progressDialog.show();
+
+        initData();
 
         EventChangeListener();
 
         System.out.println("/// " + users);
 
 
-        return inflater.inflate(R.layout.fragment_workmates, container, false);
+        return binding.getRoot();
+    }
+
+    private void initData() {
+
+        listView = binding.lvRestaurants;
+        RecyclerView.LayoutManager llm = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        listView.setLayoutManager(llm);
+        listView.setHasFixedSize(true);
+        users = new ArrayList<>();
+        adapter = new WorkmatesAdapter(getContext(), users);
+        listView.setAdapter(adapter);
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private void EventChangeListener() {
+
         userHelper.getUserCollection()
                 .orderBy("name", Query.Direction.ASCENDING)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
+                        if (progressDialog.isShowing()) {
+                            progressDialog.dismiss();
+                        }
                         Log.e("TAG", "Firestore error: " + error.getMessage());
                         return;
                     }
@@ -86,11 +104,21 @@ public class WorkmatesFragment extends Fragment {
                                 users.add(user);
                                 break;
                         }
-                        adapter.notifyDataSetChanged();
-
+                        System.out.println("/// " + user.getName());
                     }
                     System.out.println("/// " + users);
+                    adapter.notifyDataSetChanged();
+                    if (progressDialog.isShowing()) {
+                        progressDialog.dismiss();
+                    }
                 });
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    @Override
+    public void onResume() {
+        super.onResume();
+        adapter.notifyDataSetChanged();
     }
 
 //    private void initData() {

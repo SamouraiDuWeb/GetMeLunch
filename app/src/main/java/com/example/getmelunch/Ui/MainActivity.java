@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -17,6 +19,7 @@ import androidx.fragment.app.Fragment;
 
 import com.example.getmelunch.Di.User.UserHelper;
 import com.example.getmelunch.Di.User.UserRepository;
+import com.example.getmelunch.Models.User;
 import com.example.getmelunch.R;
 import com.example.getmelunch.Ui.List.ListFragment;
 import com.example.getmelunch.Ui.Map.MapsFragment;
@@ -25,13 +28,18 @@ import com.example.getmelunch.Utils.Constants;
 import com.example.getmelunch.Utils.PermissionUtils;
 import com.example.getmelunch.databinding.ActivityMainBinding;
 import com.example.getmelunch.databinding.HeaderNavigationDrawerBinding;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -43,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private HeaderNavigationDrawerBinding headerBinding;
     private final UserHelper userHelper = UserHelper.getInstance();
     private boolean permissionDenied;
+    private FirebaseFirestore db;
 
 
     @Override
@@ -57,11 +66,33 @@ public class MainActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         checkCurrentUser();
 
+        enableDeviceLocation();
         getSampleData();
-
-        initView();
         initBottomNavigation();
         initNavigationDrawer();
+//        createUsersTest();
+
+    }
+
+    // set profile pic
+    private void createUsersTest() {
+        ArrayList<User> l = new ArrayList<>();
+        l.add(new User("1", "Jonathan", ""));
+        l.add(new User("2", "Mélissa", ""));
+        l.add(new User("3", "Carol", ""));
+        l.add(new User("4", "Adam", ""));
+
+        db = FirebaseFirestore.getInstance();
+
+        for (int i = 0; i < l.size(); i++) {
+            db.collection("users").add(l.get(i)).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                @Override
+                public void onSuccess(DocumentReference documentReference) {
+                    Toast.makeText(getApplicationContext(), "Successfully added", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+
 
 
     }
@@ -102,8 +133,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void initNavigationDrawer() {
         binding.mainToolbar.setNavigationOnClickListener(v -> binding.drawerLayout.open());
+        try {
+            getCurrentUserData();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
 
-        getCurrentUserData();
 
         binding.mainNavigationDrawer.setNavigationItemSelectedListener(item -> {
             final int yourLunchId = R.id.nd_your_lunch;
@@ -148,11 +183,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void setProfilePicture(Uri photoUrl) {
 
-        Picasso.get()
-                .load(photoUrl)
-                .fit()
-                .centerCrop()
-                .into(headerBinding.headerAvatar);
+        try {
+            Picasso.get()
+                    .load(photoUrl)
+                    .fit()
+                    .centerCrop()
+                    .into(headerBinding.headerAvatar);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
     }
 
     private void setDefaultProfilePicture() {
@@ -212,6 +252,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             PermissionUtils.requestPermission(this, Constants.LOCATION_PERMISSION_REQUEST_CODE,
                     Manifest.permission.ACCESS_FINE_LOCATION, true);
+//            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+//            requestPermissionLauncher.launch(Manifest.permission.ACCESS_COARSE_LOCATION);
         }
     }
 
@@ -219,15 +261,46 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode != 42) {
+        if (requestCode != Constants.LOCATION_PERMISSION_REQUEST_CODE) {
             return;
         }
-
-        if (PermissionUtils.isPermissionGranted(permissions, grantResults,
-                Manifest.permission.ACCESS_FINE_LOCATION)) {
+        if (PermissionUtils.isPermissionGranted(permissions, grantResults, Manifest.permission.ACCESS_FINE_LOCATION)) {
             enableDeviceLocation();
         } else {
             permissionDenied = true;
+            System.out.println("///result " + grantResults[0]);
         }
+    }
+
+//    private ActivityResultLauncher<String> requestPermissionLauncher =
+//            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+//                if (isGranted) {
+//                    // Permission is granted. Continue the action or workflow in your
+//                    // app.
+//                    enableDeviceLocation();
+//                    return;
+//                } else {
+//                    permissionDenied = true;
+//                    // Explain to the user that the feature is unavailable because the
+//                    // features requires a permission that the user has denied. At the
+//                    // same time, respect the user's decision. Don't link to system
+//                    // settings in an effort to convince the user to change their
+//                    // decision.
+//                }
+//            });
+
+    @Override
+    protected void onResumeFragments() {
+        super.onResumeFragments();
+        if (permissionDenied) {
+            // Permission was not granted, display error dialog
+            showMissingPermissionError();
+            permissionDenied = false;
+        }
+    }
+    
+    private void showMissingPermissionError() {
+        PermissionUtils.PermissionDeniedDialog
+                .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
 }

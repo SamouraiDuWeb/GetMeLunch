@@ -13,13 +13,15 @@
 <!--        android:layout_height="wrap_content"-->
 <!--        tools:listitem="@layout/workmate_item"/>-->
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:id="@+id/lv_restaurants"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
+        android:orientation="vertical"
+        android:scrollbars="vertical"
         android:background="@color/white"
         tools:listitem="workmate_item" />
 </LinearLayout>

@@ -143,7 +143,7 @@ public class DetailRestaurant extends AppCompatActivity {
             msg = getResources().getString(R.string.lunch_spot_add);
         } else {
             // Delete lunch spot from Firestore 'places' collection
-            placeHelper.getPlaceCollection().document(restaurant.getDocId()).delete();
+            placeHelper.getPlaceCollection().document(restaurant.getPlaceId()).delete();
             // Update info in Firestore 'users' collection
             userHelper.updateLunchSpotId(null);
             userHelper.updateLunchSpotName(null);
@@ -160,7 +160,7 @@ public class DetailRestaurant extends AppCompatActivity {
                     getApplicationContext(), drawable));
             binding.fab.getDrawable().setTint(getResources().getColor(color));
             Snackbar.make(binding.getRoot(), msg, Snackbar.LENGTH_SHORT).show();
-        });
+        }).addOnFailureListener(System.out::println);
     }
 
     private void removeLunchSpot() {

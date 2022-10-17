@@ -136,18 +136,18 @@ public class ListFragment extends Fragment implements OnItemClickListener<Restau
                     currentLocation = location;
                     double latitude = currentLocation.getLatitude();
                     double longitude = currentLocation.getLongitude();
-                    String url = getUrl(latitude, longitude, "restaurant");
+                    String url = getUrl(latitude, longitude);
                     getPlaces(url);
                 }
             }
         });
     }
 
-    private String getUrl(double latitude, double longitude, String restaurant) {
+    private String getUrl(double latitude, double longitude) {
         StringBuilder googlePlacesUrl = new StringBuilder("https://maps.googleapis.com/maps/api/place/nearbysearch/json?");
         googlePlacesUrl.append("location=" + latitude + "," + longitude);
         googlePlacesUrl.append("&radius=" + PROXIMITY_RADIUS);
-        googlePlacesUrl.append("&type=" + restaurant);
+        googlePlacesUrl.append("&type=" + "restaurant");
         googlePlacesUrl.append("&key=" + "AIzaSyBlkyb-l3-n09s91kve6fhDUSJc5mCL7jk");
         System.out.println("///url " + googlePlacesUrl.toString());
         return googlePlacesUrl.toString();
@@ -171,6 +171,7 @@ public class ListFragment extends Fragment implements OnItemClickListener<Restau
                         recyclerViewRestaurants = nearbySearchResponse.getResults();
                         OnItemClickListener<Restaurant> listener = ListFragment.this;
                         adapter = new RestaurantAdapter().updateRestaurantList(recyclerViewRestaurants, currentLocation, listener);
+                        //crash sur detailRestaurant
                         RecyclerView recyclerView = getView().findViewById(R.id.rv_restaurants);
                         recyclerView.setAdapter(adapter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
