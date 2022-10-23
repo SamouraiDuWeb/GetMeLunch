@@ -1,6 +1,9 @@
 package com.example.getmelunch.Ui;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -40,6 +43,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -65,6 +70,8 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         checkCurrentUser();
+
+        setDailyNotification();
 
         enableDeviceLocation();
         getSampleData();
@@ -302,5 +309,27 @@ public class MainActivity extends AppCompatActivity {
     private void showMissingPermissionError() {
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
+    }
+
+    private void setDailyNotification() {
+        // Set alarm at noon
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, 12);
+        calendar.set(Calendar.MINUTE, 0);
+
+        // If user hasn't chosen lunch spot before noon, set alarm for day after
+        if (calendar.getTime().compareTo(new Date()) > 0) {
+            calendar.add(Calendar.DAY_OF_MONTH, 1);
+
+            Intent intent = new Intent(getApplicationContext(), NotificationReceiver.class);
+            @SuppressLint("UnspecifiedImmutableFlag")
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(),
+                    101, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            AlarmManager manager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (manager != null) {
+                manager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                        AlarmManager.INTERVAL_DAY, pendingIntent);
+            }
+        }
     }
 }

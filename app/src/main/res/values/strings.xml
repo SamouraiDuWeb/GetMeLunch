@@ -36,4 +36,7 @@
     <string name="fav_remove">Place has been removed from favorites</string>
     <string name="lunch_spot_add">You\'re going to this place for lunch</string>
     <string name="lunch_spot_remove">You\'re not going to this place for lunch anymore</string>
+
+    <string name="notification_text">You\'re lunching at %1$s, located at %2$s, with %3$s</string>
+    <string name="notification_title">Don\'t forget your lunch today!</string>
 </resources>
